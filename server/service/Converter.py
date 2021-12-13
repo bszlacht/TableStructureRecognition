@@ -1,22 +1,22 @@
 import json
 
-from service.data.Document import Cell, Row, Table, Document
+from server.service.data.Document import Cell, Row, Table, Document
 
 
 class Converter:
 
     @staticmethod
-    def convert_to_json(document):
+    def convert_to_json(document: Document):
         result = {}
         table_num = 1
 
-        for table in document.get_tables():
+        for table in document.tables:
             t = {}
             row_num = 1
-            for row in table.get_rows():
+            for row in table.rows:
                 r = []
-                for cell in row.get_cells():
-                    r.append(cell.get_text())
+                for cell in row.cells:
+                    r.append(cell.text)
                 t["row" + str(row_num)] = r
                 row_num += 1
             result["table" + str(table_num)] = t
