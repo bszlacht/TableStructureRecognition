@@ -4,12 +4,12 @@ from cv2 import imread, IMREAD_GRAYSCALE
 
 class DataLoader:
     def __init__(self):
-        self.path = "/home/aneta/Pulpit/Studia/dp-proj/proj/training/data/"
+        self.path = "/home/aneta/Pulpit/Studia/dp-proj/proj/model/training/data/"
         self.training_loaded = 0
         self.test_loaded = 0
         self.val_loaded = 0
 
-    def load_data(self, batch_size, data_type):
+    def load_data(self, batch_size: int, data_type: str):
 
         images = [0] * batch_size
         annotations = [0] * batch_size
@@ -34,7 +34,7 @@ class DataLoader:
 
         return images, annotations
 
-    def load_image(self, img_name):
+    def load_image(self, img_name: str):
         img_file_name = self.path + "images/" + img_name
         return imread(img_file_name, IMREAD_GRAYSCALE)
 
@@ -62,6 +62,8 @@ class DataLoader:
             idx += 1
         return [pdf_table_box] + rows
 
+
+# code for tests
 
 data_loader = DataLoader()
 im, an = data_loader.load_data(10, "training")
