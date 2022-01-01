@@ -65,7 +65,7 @@ class DataConverter:
         return (bbox[2] - bbox[0]) * (bbox[3] - bbox[1])
 
     def segmentation(self, bbox):
-        return [bbox[0], bbox[1], bbox[0], bbox[3], bbox[2], bbox[3], bbox[2], bbox[1]]
+        return [[bbox[0], bbox[1], bbox[0], bbox[3], bbox[2], bbox[3], bbox[2], bbox[1]]]
 
     def load_annotation(self, img_name, img_shape, ann_id, img_id):
         img_core_name, rest = img_name.split('_')
@@ -134,5 +134,6 @@ class DataConverter:
         return ann_id
 
 
-data_converter = DataConverter()
-data_converter.convert_data_to_COCO()
+if __name__ == "__main__":
+    data_converter = DataConverter()
+    data_converter.convert_data_to_COCO()
