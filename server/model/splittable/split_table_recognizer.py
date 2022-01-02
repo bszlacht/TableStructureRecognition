@@ -6,10 +6,60 @@ class SplitTableRecognizer:
     def process(self, document: Document) -> Document:
         pass
 
+    def merge(self, table1: Table, table2: Table) -> Table:
+        for row in table2.rows:
+            table1.add_row(row)
+
+        return table1
+
+    def column_number_diff(self, table1, table2):
+        cells1 = table1.rows[0].cells
+        cells2 = table2.rows[0].cells
+        return len(cells2) - len(cells1)
+
+
+"""
+Values for RandomForestClassifier
+
+- table1 lower margin
+- table2 upper margin
+- tables width difference
+- tables margin left difference
+- tables margin right difference
+"""
+
 
 class SplitTableModel(SplitTableRecognizer):
+
     def process(self, document: Document) -> Document:
-        pass
+
+        for i in range(len(document.tables) - 1):
+            table1 = document.tables[i]
+            table2 = document.tables[i + 1]
+
+            if table2.page_index - table1.page_index != 1:
+                continue
+
+            if self.column_number_diff(table1, table2) != 0:
+                continue
+
+            X = [
+                document.height - table1.bbox.lower_right.y,
+                table2.bbox.upper_left.y,
+                abs(table1.bbox.width() - table2.bbox.width()),
+                abs(table1.bbox.upper_left.x - table2.bbox.upper_left.x),
+                abs(table1.bbox.lower_right.x - table1.bbox.lower_right.y)
+            ]
+
+            if self.predict(X):
+                document.tables[i + 1] = self.merge(table1, table2)
+                document.remove_table(i)
+
+        return document
+
+    def predict(self, X: list) -> bool:
+        # TODO
+        return False
 
 
 class SplitTableHeuristic(SplitTableRecognizer):
@@ -35,6 +85,9 @@ class SplitTableHeuristic(SplitTableRecognizer):
         if table2.page_index - table1.page_index != 1:
             return False
 
+        if self.column_number_diff(table1, table2) != 0:
+            return False
+
         table1_lower_margin = page_height - table1.bbox.lower_right.y
         table2_upper_margin = table2.bbox.upper_left.y
 
@@ -44,9 +97,6 @@ class SplitTableHeuristic(SplitTableRecognizer):
         cells1 = table1.rows[0].cells
         cells2 = table2.rows[0].cells
 
-        if len(cells1) != len(cells2):
-            return False
-
         for i in range(len(cells1)):
             width1 = cells1[i].bbox.width()
             width2 = cells2[i].bbox.width()
@@ -54,12 +104,6 @@ class SplitTableHeuristic(SplitTableRecognizer):
                 return False
 
         return True
-
-    def merge(self, table1: Table, table2: Table) -> Table:
-        for row in table2.rows:
-            table1.add_row(row)
-
-        return table1
 
 
 if __name__ == "__main__":
