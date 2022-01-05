@@ -4,7 +4,6 @@ from copy import copy
 
 import numpy as np
 import pytesseract
-from pytesseract.pytesseract import SUPPORTED_FORMATS
 
 
 class OCR:
@@ -61,7 +60,7 @@ class OCR:
         elif self.library == 'tesseract':
             result = pytesseract.image_to_data(image, lang='+'.join(self.lang))
             valid_idxs = [i for i in range(result['text'])\
-                          if result['text'][i] and result['conf'] != '-1']
+                          if result['text'][i] and result['conf'][i] != '-1']
             
             recognized = []
             for idx in valid_idxs:
