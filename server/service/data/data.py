@@ -34,11 +34,25 @@ class BBox:
     def height(self):
         return self._lower_right.y - self._upper_left.y
 
+    def intersection(self, bbox):
+        left = max(self._upper_left.x, bbox.upper_left.x)
+        right = min(self._lower_right.x, bbox.lower_right.x)
+        top = max(self._upper_left.y, bbox.upper_left.y)
+        bottom = min(self._lower_right.y, bbox.lower_right.y)
+
+        if left < right and bottom > top:
+            return (right - left) * (bottom - top)
+        return 0
+
+    def area(self):
+        return (self._lower_right.x - self._upper_left.x) * (self._lower_right.y - self._upper_left.y)
+
 
 class Cell:
-    def __init__(self, text: str, bbox: BBox):
+    def __init__(self, text: str, bbox: BBox, page_index: int):
         self._text = text
         self._bbox = bbox
+        self._page_index = page_index
 
     @property
     def text(self):
@@ -47,6 +61,10 @@ class Cell:
     @property
     def bbox(self):
         return self._bbox
+
+    @property
+    def page_index(self):
+        return self._page_index
 
 
 class Row:
@@ -85,10 +103,11 @@ class Table:
 
 # I assume that document has several pages and each of them has the same width and height
 class Document:
-    def __init__(self, width: int, height: int):
+    def __init__(self, width: int, height: int, pages: list):
         self._tables = []
         self._width = width
         self._height = height
+        self._pages = pages
 
     def add_table(self, table: Table):
         self._tables.append(table)
@@ -107,3 +126,7 @@ class Document:
     @property
     def height(self):
         return self._height
+
+    @property
+    def pages(self):
+        return self._pages

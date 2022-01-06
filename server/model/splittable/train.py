@@ -2,8 +2,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from shutil import copyfile
 from os import listdir
-from os import path
-import os
 import xml.etree.ElementTree as ET
 import pandas as pd
 
@@ -13,7 +11,6 @@ Values for table1 and table2
 
 - table1 lower margin
 - table2 upper margin
-- tables column number difference
 - tables width difference
 - tables margin left difference
 - tables margin right difference
@@ -32,10 +29,10 @@ def list_images():
 
     f.close()
 
-def sort_images_names():
 
+def sort_images_names():
     f = open("images_list.txt", "r")
-    sorted_f= open("sorted.txt", 'w')
+    sorted_f = open("sorted.txt", 'w')
 
     lines = f.readlines()
     lines = sorted(lines)
@@ -96,13 +93,12 @@ def calculate_x(img1, img2):
     table2_xmax = int(objects[0].find('bndbox').find('xmax').text)
     table2_ymax = int(objects[0].find('bndbox').find('ymax').text)
 
-    # TODO scale this values - divide by max
     return [
-        img1_height - table1_ymax,
-        table2_ymin,
-        abs((table1_xmax - table1_xmin) - (table2_xmax - table2_xmin)),
-        abs(table1_xmin - table2_xmin),
-        abs((img2_width - table2_xmax) - (img1_width - table1_xmax))
+        (img1_height - table1_ymax) / table1_ymax,
+        table2_ymin / table2_ymax,
+        abs((table1_xmax - table1_xmin) - (table2_xmax - table2_xmin)) / table1_xmax,
+        abs(table1_xmin - table2_xmin) / table1_xmax,
+        abs((img2_width - table2_xmax) - (img1_width - table1_xmax)) / table1_xmax
     ]
 
 
@@ -136,28 +132,23 @@ def prepare_data():
             else:
                 Y.append(0)
 
-    df = pd.DataFrame(X, columns = ['lower_margin', 'upper_margin', 'width_diff', 'left_margin', 'right_margin' ])
+    df = pd.DataFrame(X, columns=['lower_margin', 'upper_margin', 'width_diff', 'left_margin', 'right_margin'])
     df['target'] = Y
     file.close()
-
-    print(sum(Y))
-    print(Y)
-    print(len(Y))
 
     return df
 
 
 def train():
     data = prepare_data()
-    X_train, X_test,  Y_train, Y_test = train_test_split(data.drop(['target'], axis='columns'), data.target, test_size=0.2)
+    X_train, X_test, Y_train, Y_test = train_test_split(data.drop(['target'], axis='columns'), data.target,
+                                                        test_size=0.2)
 
     model = RandomForestClassifier()
     model.fit(X_train, Y_train)
-    print(model.score(X_test, Y_test))
+    score = model.score(X_test, Y_test)
+    print(score)
 
 
-# list_images()
-# copy_files()
-#sort_images_names()
-# prepare_data()
-train()
+if __name__ == "__main__":
+    train()
