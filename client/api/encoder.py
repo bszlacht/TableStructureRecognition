@@ -9,7 +9,8 @@ class Encoder:
     def __init__(self) -> None:
         pass
 
-    def encode(self, data):
+    @staticmethod
+    def encode(data: np.ndarray):
 
         image = Image.fromarray(data)
         output = io.BytesIO()
@@ -22,10 +23,11 @@ class Encoder:
 
 # code for test
 
-# encoder = Encoder()
-# decoder = Decoder()
-# im = np.array(Image.open('test.jpg'))
-# encoded = encoder.encode(im)
-# # print(encoded)
-# decoded = decoder.decode(encoded)
-# gr_im = Image.fromarray(decoded).save('result.jpg')
+if __name__ == "__main__":
+    encoder = Encoder()
+    decoder = Decoder()
+    im = np.array(Image.open('test.jpg'))
+    encoded = encoder.encode(im)
+    # print(encoded)
+    decoded = decoder.decode(encoded)
+    gr_im = Image.fromarray(decoded).save('result.jpg')

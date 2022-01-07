@@ -1,4 +1,4 @@
-# from input.DataInstance import DataInstance
+from FileReader.DataInstance import DataInstance
 # from input.Model import Model
 
 from ipaddress import ip_address
@@ -14,7 +14,7 @@ class Service:
         ip, port = self.parse_ip_port(address)
         self.handler = ConnectionHandler(ip, port)
 
-    def predict(self, model, data_instance):
+    def predict(self, model: Model, data_instance: DataInstance):
         request = Request(model, data_instance)
         result = self.handler.send(request, "/predict")
         print(result)
@@ -33,8 +33,9 @@ class Service:
 
 # code for test
 
-# address = "127.0.0.1:80"
-# service = Service(address)
-# ip, port = service.parse_ip_port(address)
-# print(ip)
-# print(port)
+if __name__ == "__main__":
+    address = "127.0.0.1:80"
+    service = Service(address)
+    ip, port = service.parse_ip_port(address)
+    print(ip)
+    print(port)
