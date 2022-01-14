@@ -28,11 +28,37 @@ class BBox:
     def to_array(self):
         return [self._upper_left.x, self._upper_left.y, self._lower_right.x, self.lower_right.y]
 
+    def width(self):
+        return self._lower_right.x - self._upper_left.x
 
-class Cell:
-    def __init__(self, text: str, bbox: BBox):
+    def height(self):
+        return self._lower_right.y - self._upper_left.y
+
+    def intersection(self, bbox):
+        left = max(self._upper_left.x, bbox.upper_left.x)
+        right = min(self._lower_right.x, bbox.lower_right.x)
+        top = max(self._upper_left.y, bbox.upper_left.y)
+        bottom = min(self._lower_right.y, bbox.lower_right.y)
+
+        if left < right and bottom > top:
+            return (right - left) * (bottom - top)
+        return 0
+
+    def area(self):
+        return (self._lower_right.x - self._upper_left.x) * (self._lower_right.y - self._upper_left.y)
+
+
+class Component:
+    def __init__(self):
+        self._children = []
+
+
+class Cell(Component):
+    def __init__(self, text: str, bbox: BBox, page_index: int):
+        super().__init__()
         self._text = text
         self._bbox = bbox
+        self._page_index = page_index
 
     @property
     def text(self):
@@ -42,43 +68,68 @@ class Cell:
     def bbox(self):
         return self._bbox
 
+    @property
+    def page_index(self):
+        return self._page_index
 
-class Row:
-    def __init__(self):
-        self._cells = []
 
-    def add_cell(self, cell: Cell):
-        self._cells.append(cell)
+class Row(Component):
+    def add_cell(self, cell: Component):
+        self._children.append(cell)
 
     @property
     def cells(self):
-        return self._cells
+        return self._children
 
 
-class Table:
-    def __init__(self, bbox: BBox):
-        self._rows = []
+class Table(Component):
+    def __init__(self, bbox: BBox, page_index: int):
+        super().__init__()
         self._bbox = bbox
+        self._page_index = page_index
 
-    def add_row(self, row: Row):
-        self._rows.append(row)
+    def add_row(self, row: Component):
+        self._children.append(row)
 
     @property
     def rows(self):
-        return self._rows
+        return self._children
 
     @property
     def bbox(self):
         return self._bbox
 
+    @property
+    def page_index(self):
+        return self._page_index
 
-class Document:
-    def __init__(self):
-        self._tables = []
 
-    def add_table(self, table: Table):
-        self._tables.append(table)
+# I assume that document has several pages and each of them has the same width and height
+class Document(Component):
+    def __init__(self, width: int, height: int, pages: list):
+        super().__init__()
+        self._width = width
+        self._height = height
+        self._pages = pages
+
+    def add_table(self, table: Component):
+        self._children.append(table)
+
+    def remove_table(self, index: int):
+        self._children.pop(index)
 
     @property
     def tables(self):
-        return self._tables
+        return self._children
+
+    @property
+    def width(self):
+        return self._width
+
+    @property
+    def height(self):
+        return self._height
+
+    @property
+    def pages(self):
+        return self._pages
