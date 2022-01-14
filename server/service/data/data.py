@@ -48,8 +48,14 @@ class BBox:
         return (self._lower_right.x - self._upper_left.x) * (self._lower_right.y - self._upper_left.y)
 
 
-class Cell:
+class Component:
+    def __init__(self):
+        self._children = []
+
+
+class Cell(Component):
     def __init__(self, text: str, bbox: BBox, page_index: int):
+        super().__init__()
         self._text = text
         self._bbox = bbox
         self._page_index = page_index
@@ -67,30 +73,27 @@ class Cell:
         return self._page_index
 
 
-class Row:
-    def __init__(self):
-        self._cells = []
-
-    def add_cell(self, cell: Cell):
-        self._cells.append(cell)
+class Row(Component):
+    def add_cell(self, cell: Component):
+        self._children.append(cell)
 
     @property
     def cells(self):
-        return self._cells
+        return self._children
 
 
-class Table:
+class Table(Component):
     def __init__(self, bbox: BBox, page_index: int):
-        self._rows = []
+        super().__init__()
         self._bbox = bbox
         self._page_index = page_index
 
-    def add_row(self, row: Row):
-        self._rows.append(row)
+    def add_row(self, row: Component):
+        self._children.append(row)
 
     @property
     def rows(self):
-        return self._rows
+        return self._children
 
     @property
     def bbox(self):
@@ -102,22 +105,22 @@ class Table:
 
 
 # I assume that document has several pages and each of them has the same width and height
-class Document:
+class Document(Component):
     def __init__(self, width: int, height: int, pages: list):
-        self._tables = []
+        super().__init__()
         self._width = width
         self._height = height
         self._pages = pages
 
-    def add_table(self, table: Table):
-        self._tables.append(table)
+    def add_table(self, table: Component):
+        self._children.append(table)
 
     def remove_table(self, index: int):
-        self._tables.pop(index)
+        self._children.pop(index)
 
     @property
     def tables(self):
-        return self._tables
+        return self._children
 
     @property
     def width(self):
