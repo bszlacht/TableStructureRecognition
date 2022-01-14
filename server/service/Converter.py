@@ -1,6 +1,6 @@
 import json
 
-from server.service.data.data import *
+from server.service.data import *
 
 
 class Converter:
