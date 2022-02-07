@@ -186,9 +186,12 @@ def extract_text_bboxes(cell_img):
 
     height, width = cell_img.shape[0:2]
     img_shape = height + err14, width + err14, 3
-
     img_array = np.zeros(img_shape, dtype=np.uint8)
-    img_array[7:height+err7, 7:width+err7] = cell_img
+
+    # drawing cell borders
+    cv2.rectangle(img=img_array, pt1=(0, 0), pt2=(width + err14, height + err14), color=(255, 255, 255), thickness=30)
+
+    img_array[7:height + err7, 7:width + err7] = cell_img
 
     # preparing image
     img_gray = cv2.cvtColor(src=img_array, code=cv2.COLOR_BGR2GRAY)  # changing color space
@@ -309,9 +312,9 @@ def recognize(image, table, cells_bbox):
     vertical_lines = []
 
     # ready lists of horizontal and vertical lines
-    for no, c in enumerate(y_lines):
-        vertical_lines.append([c, table[1], c, table[3]])  # [x, min y, x, max y]
     for no, c in enumerate(x_lines):
+        vertical_lines.append([c, table[1], c, table[3]])  # [x, min y, x, max y]
+    for no, c in enumerate(y_lines):
         horizontal_lines.append([table[0], c, table[2], c])  # [min x, y, max x, y]
 
     # from BorderTableCellRecognizer
