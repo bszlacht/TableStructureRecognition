@@ -4,6 +4,9 @@ from copy import copy
 
 import numpy as np
 import pytesseract
+import easyocr
+
+from ..service import Document
 
 
 class OCR:
@@ -24,8 +27,6 @@ class OCR:
         self._lang = lang
 
         if self._library == 'easyocr':
-            import easyocr
-
             # TODO check if there will be enough RAM/VRAM for all the models
             self._reader = easyocr.Reader(lang, 
                                           gpu=True, 
@@ -34,8 +35,6 @@ class OCR:
                                           recognizer=True)
 
         elif self._library == 'tesseract':
-            import pytesseract
-
             lang_code_map = {
                 'en': 'eng',
                 'pl': 'pol',
@@ -97,6 +96,6 @@ class OCR:
                     max_score = max(recognized, key=itemgetter(2))
                     max_score_idx = [i for i, (_, _, score) in enumerate(recognized) if score == max_score][0]
 
-                    cell._text = recognized[max_score_idx][1]
+                    cell.text = recognized[max_score_idx][1]
         
         return document
