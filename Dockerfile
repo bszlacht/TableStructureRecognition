@@ -22,4 +22,4 @@ WORKDIR /workspace
 COPY server /workspace/server
 
 
-# CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8444"]
+# CMD ["uvicorn", "server/controller/api:app", "--host", "0.0.0.0", "--port", "8444"]
