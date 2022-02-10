@@ -240,7 +240,7 @@ test_pipeline = [
             dict(type='Collect', keys=['img']),
         ])
 ]
-classes = ('table', 'cell')
+classes = ('Bordered', 'cell', 'Borderless')
 data = dict(
     samples_per_gpu=2,
     workers_per_gpu=2,
@@ -286,9 +286,8 @@ log_config = dict(
 total_epochs = 36
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = 'new_chunk_cascade_mask_rcnn_hrnetv2p_w32_20e'
+work_dir = 'models'
 load_from = None
-# resume_from = '/content/drive/My Drive/Mmdetection/new_chunk_cascade_mask_rcnn_hrnetv2p_w32_20e/epoch_30.pth'
 resume_from = ''
 workflow = [('train', 1)]
 gpu_ids = [0]
