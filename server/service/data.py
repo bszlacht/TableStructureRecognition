@@ -52,7 +52,7 @@ class BBox:
 
     def overlaps(self, bbox: BBox) -> bool:
         return self.upper_left.x <= bbox.lower_right.x and self.upper_left.y <= bbox.lower_right.y \
-           and bbox.lower_right.x <= self._upper_left.x and bbox.lower_right.y <= self._upper_left.y
+           and bbox.upper_left.x <= self.lower_right.x and bbox.upper_left.y <= self.lower_right.y
 
     def area(self) -> int:
         return (self._lower_right.x - self._upper_left.x) * (self._lower_right.y - self._upper_left.y)

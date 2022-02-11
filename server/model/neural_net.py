@@ -32,8 +32,8 @@ class NeuralNet:
                     if element[4] < threshold:
                         continue
 
-                    upper_left = Point2D(element[0], element[1])
-                    lower_right = Point2D(element[2], element[3])
+                    upper_left = Point2D(int(element[0]), int(element[1]))
+                    lower_right = Point2D(int(element[2]), int(element[3]))
 
                     bbox = BBox(upper_left, lower_right)
 
