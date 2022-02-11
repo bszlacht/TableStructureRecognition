@@ -1,4 +1,5 @@
 from pathlib import Path
+import logging
 
 from fastapi import FastAPI
 from fastapi import Body
@@ -11,8 +12,12 @@ from models import (
     TableRecognitionRequest,
     TablesContentAndPositionResponse
 )
-from service.model_inference import ModelInference
+from server.service.model_inference import ModelInference
 from decoder import Decoder
+
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)-5s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 app = FastAPI(
@@ -38,7 +43,7 @@ def docs_redirect():
 async def extract_entities(body: TableRecognitionRequest = Body(..., example=example_request)):
     """Recognize tables, their structures and content"""
 
-    model_configuration = body.model
+    model_configuration = body.model.dict()
 
     tables = []
     for document in body.data:
@@ -46,5 +51,7 @@ async def extract_entities(body: TableRecognitionRequest = Body(..., example=exa
         for recognized_table in model.predict(pages, document.page_width, document.page_height,  model_configuration):
             recognized_table.update({'document_id': document.document_id})
             tables.append(recognized_table)
+
+    logger.info('Sending response')
 
     return {"tables": tables}

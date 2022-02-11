@@ -15,7 +15,7 @@ class NeuralNet:
                  checkpoint_file: str = None,
                  device: str = 'cuda:0') -> None:
                  
-       self.model: CascadeRCNN = init_detector(config_file, checkpoint_file, device)
+       self.model: CascadeRCNN = init_detector(str(config_file), str(checkpoint_file), device)
 
     def predict(self, document: Document, threshold: float = 0.85) -> Document:
         for page_index, page in enumerate(document.pages):

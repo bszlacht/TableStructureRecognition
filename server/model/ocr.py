@@ -1,5 +1,5 @@
 from operator import itemgetter
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from copy import copy
 
 import numpy as np
@@ -12,7 +12,7 @@ from ..service import Document
 class OCR:
     SUPPORTED_LANGUAGES = ['en', 'pl', 'uk', 'ru']
 
-    def __init__(self, library: str, lang: str | List[str] = 'pl') -> None:
+    def __init__(self, library: str, lang: Union[str, List[str]] = 'pl') -> None:
         self._library = library.lower()
         if self._library not in ['tesseract', 'easyocr']:
             raise ValueError('library can be either "Tesseract" or "EasyOCR"')
@@ -30,7 +30,7 @@ class OCR:
             # TODO check if there will be enough RAM/VRAM for all the models
             self._reader = easyocr.Reader(lang, 
                                           gpu=True, 
-                                          download_enable=True, 
+                                          download_enabled=True, 
                                           detector=True, 
                                           recognizer=True)
 

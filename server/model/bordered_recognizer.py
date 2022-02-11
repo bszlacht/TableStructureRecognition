@@ -2,7 +2,6 @@ from copy import deepcopy
 
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 from ..service import Point2D, BBox, Cell, Row, Table, Document
 
 
@@ -24,13 +23,6 @@ class Points:
 
     def get_best_line_coordinates(self):
         return min(self._x1), max(self._x2)  # the widest line
-
-
-# TODO do we need this??
-def display(I):
-    plt.imshow(I, cmap='gray')
-    plt.show()
-
 
 def preprocessing(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

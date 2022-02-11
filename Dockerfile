@@ -20,6 +20,9 @@ WORKDIR /workspace
 
 
 COPY server /workspace/server
+COPY setup.py /workspace/setup.py
+
+RUN pip install -e .
 
 
-# CMD ["uvicorn", "server/controller/api:app", "--host", "0.0.0.0", "--port", "8444"]
+CMD ["uvicorn", "server/controller/api:app", "--host", "0.0.0.0", "--port", "8444"]
