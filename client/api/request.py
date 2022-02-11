@@ -1,5 +1,5 @@
-from FileReader.DataInstance import DataInstance
-# from input.Model import Model
+from ..input.DataInstance import DataInstance
+from ..input.ModelBuilder import Model
 
 from client.api.encoder import Encoder
 
@@ -11,7 +11,7 @@ class Request:
         self.headers = {"Content-Type": "application/json"}
         self.content = self.prepare(model, data_instance)
 
-    def prepare(self, model, data_instance):
+    def prepare(self, model: Model, data_instance: DataInstance):
         pages = []
 
         for arr in data_instance.data:
