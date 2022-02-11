@@ -38,11 +38,11 @@ class NeuralNet:
                     bbox = BBox(upper_left, lower_right)
 
                     if self.CLASSES[class_index] == 'Bordered':
-                        table = Table(bbox, page_index)
+                        table = Table(bbox, page_index, True)
                         bordered_tables.append(table)
                     
                     elif self.CLASSES[class_index] == 'Borderless':
-                        table = Table(bbox, page_index)
+                        table = Table(bbox, page_index, False)
 
                         # thiw row will collect all the detected cells (will be grouped into rows later)
                         table.add_row(Row())
