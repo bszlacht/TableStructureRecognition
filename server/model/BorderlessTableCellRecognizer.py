@@ -1,7 +1,6 @@
 import sys
 import numpy as np
 import cv2
-from BorderTableCellRecognizer import extract_table
 from server.service.data import Document, Table, Row, Cell, BBox, Point2D
 
 
@@ -178,6 +177,90 @@ def x_lines_based_on_col_boundaries(table, col_left_right, max_len):
     return x_lines
 
 
+# finding intersection point of two lines
+def intersection_point(x1, y1, x2, y2, x3, y3, x4, y4):
+
+    if (x1 <= x4 + 5 or x1 <= x4 - 5) and (x1 >= x3 - 5 or x1 >= x3 + 5)  and\
+            (y3 <= max(y1, y2) + 5) and (y3 + 8 >= min(y1, y2) or y3 - 5 >= min(y1, y2)):
+        return [x1, y3]
+
+
+# calculating cells bboxes based on found lines
+def bboxes_based_on_lines(horizontal_lines, vertical_lines):
+
+    x, y, num = 0, 0, 0
+    points = []
+
+    # finding all intersection points
+    for x1, y1, x2, y2 in vertical_lines:
+        col_points = []
+
+        for x3, y3, x4, y4 in horizontal_lines:
+            col_points.append(intersection_point(x1, y1, x2, y2, x3, y3, x4, y4))
+            num += 1
+        points.append(col_points)
+
+    ready_bboxes, bboxes_to_finish = [], []
+    flag = 1
+
+    # cells bboxes based on intersection points
+    for i, col_points in enumerate(points):
+        new_bboxes = []
+
+        for j, point in enumerate(col_points):
+
+            if j == len(col_points) - 1:
+                break
+
+            next_point = col_points[j + 1]
+            temp_bbox = [point[0], point[1], next_point[0], next_point[1], sys.maxsize, sys.maxsize, sys.maxsize, sys.maxsize]
+
+            if i == 0:
+                bboxes_to_finish.append(temp_bbox)
+
+            else:
+                new_bboxes.append(temp_bbox)
+
+                indexes = []
+                flag = 1
+
+                for num, bbox_to_finish in enumerate(bboxes_to_finish):
+
+                    if point[1] == bbox_to_finish[1] and bboxes_to_finish[num][4] == sys.maxsize:
+                        bboxes_to_finish[num][4], bboxes_to_finish[num][5] = point[0], point[1]  # found top_right point
+
+                        if bboxes_to_finish[num][4] != sys.maxsize and bboxes_to_finish[num][6] != sys.maxsize:
+                            ready_bboxes.append(bboxes_to_finish[num])
+                            indexes.append(num)
+                            flag = 1
+
+                    if next_point[1] == bbox_to_finish[3] and bboxes_to_finish[num][6] == sys.maxsize:
+                        bboxes_to_finish[num][6], bboxes_to_finish[num][7] = next_point[0], next_point[1]  # found bottom_right point
+
+                        if bboxes_to_finish[num][4] != sys.maxsize and bboxes_to_finish[num][6] != sys.maxsize:
+                            ready_bboxes.append(bboxes_to_finish[num])
+                            indexes.append(num)
+                            flag = 1
+
+                    if len(bboxes_to_finish) != 0:
+                        if bboxes_to_finish[num][4] == sys.maxsize or bboxes_to_finish[num][6] == sys.maxsize:
+                            flag = 0
+
+                for idx in indexes:
+                    bboxes_to_finish.pop(idx)
+
+                # moving not ready bboxes to new_bboxes
+                if flag == 0:
+                    for bbox_to_finish in bboxes_to_finish:
+                        if bbox_to_finish[4] == sys.maxsize or bbox_to_finish[6] == sys.maxsize:
+                            new_bboxes.append(bbox_to_finish)
+
+        if i != 0:
+            bboxes_to_finish = new_bboxes
+
+    return ready_bboxes
+
+
 # cell_img - image fragment of one cell
 # returns bboxes of text in cell: [x, y, width, height] - (lower_left, width, height)
 def extract_text_bboxes(cell_img):
@@ -317,10 +400,7 @@ def recognize(image, table, cells_bbox):
     for no, c in enumerate(y_lines):
         horizontal_lines.append([table[0], c, table[2], c])  # [min x, y, max x, y]
 
-    # from BorderTableCellRecognizer
-    # cell bboxes: (x1, y1, x2, y2, x3, y3, x4, y4) - (lower_left, upper_left, upper_right, lower_right)
-    final_cells_bboxes = extract_table(image[table[1]:table[3], table[0]:table[2]], 0,
-                                       (horizontal_lines, vertical_lines))
+    final_cells_bboxes = bboxes_based_on_lines(horizontal_lines, vertical_lines)
 
     cells_bboxes = []  # cell bboxes: [x, y, width, height]
 
