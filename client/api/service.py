@@ -1,5 +1,5 @@
-from FileReader.DataInstance import DataInstance
-# from input.Model import Model
+from ..input.DataInstance import DataInstance
+from ..input.ModelBuilder import Model
 
 from ipaddress import ip_address
 from urllib.parse import urlparse
