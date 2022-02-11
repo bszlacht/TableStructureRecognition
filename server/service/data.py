@@ -102,7 +102,7 @@ class Table(Component):
         self._bbox = bbox
         self._page_index = page_index
 
-    def add_row(self, row: Cell):
+    def add_row(self, row: Row):
         self._children.append(row)
 
     @property
