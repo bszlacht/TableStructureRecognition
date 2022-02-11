@@ -52,7 +52,7 @@ class SplitTableModel(SplitTableRecognizer):
         ]]
 
     def predict(self, X: list) -> bool:
-        model = pickle.load(open("model.sav", 'rb'))
+        model = pickle.load(open("models/model.sav", 'rb'))
         result = model.predict(X)
         return result[0]
 
