@@ -180,7 +180,7 @@ def x_lines_based_on_col_boundaries(table, col_left_right, max_len):
 # finding intersection point of two lines
 def intersection_point(x1, y1, x2, y2, x3, y3, x4, y4):
 
-    if (x1 <= x4 + 5 or x1 <= x4 - 5) and (x1 >= x3 - 5 or x1 >= x3 + 5)  and\
+    if (x1 <= x4 + 5 or x1 <= x4 - 5) and (x1 >= x3 - 5 or x1 >= x3 + 5) and\
             (y3 <= max(y1, y2) + 5) and (y3 + 8 >= min(y1, y2) or y3 - 5 >= min(y1, y2)):
         return [x1, y3]
 
@@ -493,10 +493,10 @@ def prepare_table(table, ready_boxes_in_rows, page):
             upper_left = Point2D(box[0], box[3])
             lower_right = Point2D(box[2], box[1])
             bbox = BBox(upper_left, lower_right)
-            cell = Cell("", bbox, page)
-            row.addCell(cell)
+            cell = Cell(bbox, page)
+            row.add_cell(cell)
 
-        table.addRow(row)
+        table.add_row(row)
 
     return table
 
