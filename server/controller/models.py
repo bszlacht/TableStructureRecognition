@@ -5,18 +5,22 @@ from pydantic import BaseModel, Field
 class ModelConfigurationRequest(BaseModel):
     splitted_table_recognition: str = Field('heuristic', regex=r'heuristic|model')
     ocr: str = Field('tesseract', regex=r'tesseract|easyocr')
+    lang: str = Field('en', regex=r'en|uk|pl|ru')
+    threshold: float = Field(0.85, ge=0.0, le=1.0)
     # TODO add more configurable hyperparameters
 
 
 class DocumentRequest(BaseModel):
     document_id: int
     pages: List[str]
+    page_width: int
+    page_height: int
 
 
 class TableRecognitionRequest(BaseModel):
     model: ModelConfigurationRequest
     data: List[DocumentRequest]
-    
+
 
 class Message(BaseModel):
     message: str

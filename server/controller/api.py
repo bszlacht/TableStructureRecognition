@@ -43,7 +43,7 @@ async def extract_entities(body: TableRecognitionRequest = Body(..., example=exa
     tables = []
     for document in body.data:
         pages = [decoder.decode(page) for page in document.pages]
-        for recognized_table in model.predict(pages, model_configuration):
+        for recognized_table in model.predict(pages, document.page_width, document.page_height,  model_configuration):
             recognized_table.update({'document_id': document.document_id})
             tables.append(recognized_table)
 

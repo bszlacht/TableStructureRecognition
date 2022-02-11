@@ -97,12 +97,13 @@ class Row(Component):
 
 
 class Table(Component):
-    def __init__(self, bbox: BBox, page_index: int):
+    def __init__(self, bbox: BBox, page_index: int, bordered: bool):
         super().__init__()
         self._bbox = bbox
         self._page_index = page_index
+        self._bordered = bordered
 
-    def add_row(self, row: Cell):
+    def add_row(self, row: Row):
         self._children.append(row)
 
     @property
@@ -116,6 +117,14 @@ class Table(Component):
     @property
     def page_index(self) -> int:
         return self._page_index
+
+    @property
+    def is_bordered(self) -> bool:
+        return self._bordered
+
+    @property
+    def is_borderless(self) -> bool:
+        return not self._bordered
 
 
 # I assume that document has several pages and each of them has the same width and height
@@ -135,6 +144,14 @@ class Document(Component):
     @property
     def tables(self) -> List[Table]:
         return self._children
+
+    @property
+    def bordered_tables(self) -> List[Table]:
+        return [table for table in self.tables if table.is_bordered]
+
+    @property
+    def borderless_tables(self) -> List[Table]:
+        return [table for table in self.tables if table.is_borderless]
 
     @property
     def width(self) -> int:

@@ -1,7 +1,7 @@
 .vscode
 .venv
 app/.env
-
+.idea
 forge.yaml
 .forge
 

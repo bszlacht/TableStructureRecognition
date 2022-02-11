@@ -17,6 +17,9 @@ class Request:
         for arr in data_instance.data:
             pages.append(self.encoder.encode(arr))
 
-        content = {"model": model.get_config(), "data": [{"document_id": 1, "pages": pages}]}
+        content = {"model": model.config, "data": [{"document_id": 1,
+                                                    "pages": pages,
+                                                    "page_width": len(data_instance.data[0]),
+                                                    "page_height": len(data_instance)}]}
 
         return content
