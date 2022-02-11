@@ -493,7 +493,7 @@ def prepare_table(table, ready_boxes_in_rows, page):
             upper_left = Point2D(box[0], box[3])
             lower_right = Point2D(box[2], box[1])
             bbox = BBox(upper_left, lower_right)
-            cell = Cell("", bbox, -1)  # todo page
+            cell = Cell("", bbox, page)
             row.addCell(cell)
 
         table.addRow(row)
@@ -510,9 +510,10 @@ class BorderlessTableCellRecognizer:
         for table in tables:
             # neural net returns detected cell bboxes in random order in single row of table
             rows = table.rows()
-            table_bbox, cells_bboxes = recognize(image, table.bbox(), rows[0])  # todo image
+            image = document.pages()[table.page_index()]
+            table_bbox, cells_bboxes = recognize(image, table.bbox(), rows[0])
 
-            table = prepare_table(table_bbox, cells_bboxes, -1)  # todo page
+            table = prepare_table(table_bbox, cells_bboxes, table.page_index())
             result.add_table(table)
 
         return result
