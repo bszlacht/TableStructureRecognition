@@ -505,7 +505,7 @@ class BorderlessTableCellRecognizer:
 
     def recognize_borderless(self, document):
         result = Document(document.width, document.height, document.pages)
-        tables = document.tables()
+        tables = document.borderless_tables()
 
         for table in tables:
             # neural net returns detected cell bboxes in random order in single row of table
