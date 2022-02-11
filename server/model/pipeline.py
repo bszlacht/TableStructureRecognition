@@ -32,17 +32,17 @@ class CascadeTabNetPipeline:
         self._split_table_recognizer = None
         self._ocr = None
 
-    def predict(self, document: Document, config: dict) -> Document:
+    def run(self, document: Document, config: dict) -> Document:
         self.configure(config)
 
-        self._neural_net.predict(document, threshold=config['threshold'])
+        document = self._neural_net.predict(document, threshold=config['threshold'])
 
-        self._bordered_table_cell_recognizer
-        self._borderless_table_cell_recognizer.recognize_borderless(document)
+        document = self._bordered_table_cell_recognizer.recognize(document)
+        document = self._borderless_table_cell_recognizer.recognize(document)
 
-        self._split_table_recognizer.process(document)
+        document = self._split_table_recognizer.process(document)
 
-        self._ocr.process(document)
+        document = self._ocr.process(document)
 
         self.flush()
 

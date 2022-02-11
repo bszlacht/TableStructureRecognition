@@ -503,17 +503,16 @@ def prepare_table(table, ready_boxes_in_rows, page):
 
 class BorderlessTableCellRecognizer:
 
-    def recognize_borderless(self, document):
-        result = Document(document.width, document.height, document.pages)
-        tables = document.borderless_tables()
+    def recognize(self, document: Document):
+        tables = document.borderless_tables
 
         for table in tables:
             # neural net returns detected cell bboxes in random order in single row of table
-            rows = table.rows()
-            image = document.pages()[table.page_index()]
-            table_bbox, cells_bboxes = recognize(image, table.bbox(), rows[0])
+            rows = table.rows
+            image = document.pages[table.page_index]
+            table_bbox, cells_bboxes = recognize(image, table.bbox, rows[0])
 
-            table = prepare_table(table_bbox, cells_bboxes, table.page_index())
-            result.add_table(table)
+            table = prepare_table(table_bbox, cells_bboxes, table.page_index)
+            document.add_table(table)
 
-        return result
+        return document

@@ -3,7 +3,7 @@ from copy import deepcopy
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from data import Point2D, BBox, Component, Cell, Row, Table, Document
+from ..service import Point2D, BBox, Cell, Row, Table, Document
 
 
 class Points:
@@ -26,6 +26,7 @@ class Points:
         return min(self._x1), max(self._x2)  # the widest line
 
 
+# TODO do we need this??
 def display(I):
     plt.imshow(I, cmap='gray')
     plt.show()
@@ -193,7 +194,7 @@ def bordered(coordinates, image):  # [x1,y1,x2,y2]
 
 class BorderedTableCellRecognizer:
     def recognize(self, document: Document):
-        tables = document.tables
+        tables = document.bordered_tables
         images = document.pages
         row = []
         for table in tables:
