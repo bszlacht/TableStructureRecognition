@@ -18,6 +18,8 @@ class Request:
             pages.append(self.encoder.encode(arr))
 
         content = {"model": model.config, "data": [{"document_id": 1,
-                                                    "pages": pages}]}
+                                                    "pages": pages,
+                                                    "page_width": len(data_instance.data[0]),
+                                                    "page_height": len(data_instance)}]}
 
         return content

@@ -11,12 +11,14 @@ class ModelConfigurationRequest(BaseModel):
 class DocumentRequest(BaseModel):
     document_id: int
     pages: List[str]
+    page_width: int
+    page_height: int
 
 
 class TableRecognitionRequest(BaseModel):
     model: ModelConfigurationRequest
     data: List[DocumentRequest]
-    
+
 
 class Message(BaseModel):
     message: str
