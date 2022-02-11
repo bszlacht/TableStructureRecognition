@@ -338,32 +338,7 @@ def calculate_merged_boxes(cell_bboxes_in_rows):
     return merged_boxes
 
 
-def prepare_document(table, ready_boxes_in_rows):
-    upper_left = Point2D(table[0], table[3])
-    lower_right = Point2D(table[2], table[1])
-    bbox = BBox(upper_left, lower_right)
-    table = Table(bbox)
-
-    for final in ready_boxes_in_rows:
-        row = Row()
-
-        for box in final:
-            upper_left = Point2D(box[0], box[3])
-            lower_right = Point2D(box[2], box[1])
-            bbox = BBox(upper_left, lower_right)
-            cell = Cell("", bbox)
-            row.addCell(cell)
-
-        table.addRow(row)
-
-    document = Document()
-    document.add(table)
-
-    return document
-
-
 # input: table bboxes, detected cells bboxes, original image
-# output: Document
 #       bbox = [min x, min y, max x, max y]
 def recognize(image, table, cells_bbox):
     err5, err15, err20, err50 = 5, 15, 20, 50
@@ -502,4 +477,42 @@ def recognize(image, table, cells_bbox):
                 else:
                     ready_boxes_in_rows[row_index].append(found_merged_box)
 
-    return prepare_document(table, ready_boxes_in_rows)
+    return table, ready_boxes_in_rows
+
+
+def prepare_table(table, ready_boxes_in_rows, page):
+    upper_left = Point2D(table[0], table[3])
+    lower_right = Point2D(table[2], table[1])
+    bbox = BBox(upper_left, lower_right)
+    table = Table(bbox, page)
+
+    for final in ready_boxes_in_rows:
+        row = Row()
+
+        for box in final:
+            upper_left = Point2D(box[0], box[3])
+            lower_right = Point2D(box[2], box[1])
+            bbox = BBox(upper_left, lower_right)
+            cell = Cell("", bbox, -1)  # todo page
+            row.addCell(cell)
+
+        table.addRow(row)
+
+    return table
+
+
+class BorderlessTableCellRecognizer:
+
+    def recognize_borderless(self, document):
+        result = Document(document.width, document.height, document.pages)
+        tables = document.tables()
+
+        for table in tables:
+            # neural net returns detected cell bboxes in random order in single row of table
+            rows = table.rows()
+            table_bbox, cells_bboxes = recognize(image, table.bbox(), rows[0])  # todo image
+
+            table = prepare_table(table_bbox, cells_bboxes, -1)  # todo page
+            result.add_table(table)
+
+        return result
