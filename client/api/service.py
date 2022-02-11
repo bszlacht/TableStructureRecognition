@@ -1,5 +1,5 @@
-from ..input.DataInstance import DataInstance
-from ..input.ModelBuilder import Model
+from client.input.data_instance import DataInstance
+from ..input.model_builder import Model
 
 from ipaddress import ip_address
 from urllib.parse import urlparse

@@ -1,5 +1,5 @@
-from ..input.DataInstance import DataInstance
-from ..input.ModelBuilder import Model
+from client.input.data_instance import DataInstance
+from ..input.model_builder import Model
 
 from client.api.encoder import Encoder
 
@@ -20,6 +20,6 @@ class Request:
         content = {"model": model.config, "data": [{"document_id": 1,
                                                     "pages": pages,
                                                     "page_width": len(data_instance.data[0]),
-                                                    "page_height": len(data_instance)}]}
+                                                    "page_height": len(data_instance.data)}]}
 
         return content

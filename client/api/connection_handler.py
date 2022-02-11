@@ -4,10 +4,10 @@ import json
 
 class ConnectionHandler:
 
-    def __init__(self, ip, port):
+    def __init__(self, ip, port, scheme='http://'):
         self.ip = ip
         self.port = port
-        self.scheme = 'http://'
+        self.scheme = scheme
 
     def send(self, request, endpoint):
         data = request.content
