@@ -57,8 +57,10 @@ class OCR:
         if self.library == 'easyocr':
             recognized = self._reader.readtext(image)
         elif self.library == 'tesseract':
-            result = pytesseract.image_to_data(image, lang='+'.join(self.lang))
-            valid_idxs = [i for i in range(result['text'])\
+            result = pytesseract.image_to_data(image, 
+                                               lang='+'.join(self.lang), 
+                                               output_type=pytesseract.Output.DICT)
+            valid_idxs = [i for i in range(len(result['text']))\
                           if result['text'][i] and result['conf'][i] != '-1']
             
             recognized = []
@@ -75,7 +77,7 @@ class OCR:
                     [l,     t + h]
                 ]
 
-                recognized.append((points, result['text'][idx], points['conf'][idx]))
+                recognized.append((points, result['text'][idx], result['conf'][idx]))
         else:
             raise TypeError('unknown OCR library set. Must be either "Tesseract" or "EasyOCR"')
 
@@ -93,9 +95,9 @@ class OCR:
 
                     recognized = self.recognize(sub_image)
 
-                    max_score = max(recognized, key=itemgetter(2))
-                    max_score_idx = [i for i, (_, _, score) in enumerate(recognized) if score == max_score][0]
+                    if recognized:
+                        best_score_result = max(recognized, key=itemgetter(2))
 
-                    cell.text = recognized[max_score_idx][1]
+                        cell.text = best_score_result[1]
         
         return document

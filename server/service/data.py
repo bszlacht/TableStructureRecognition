@@ -35,6 +35,8 @@ class Point2D:
 
 class BBox:
     def __init__(self, upper_left: Point2D, lower_right: Point2D):
+        assert upper_left <= lower_right, 'bbox of negative width or height cannot be defined'
+
         self._upper_left: Point2D = upper_left
         self._lower_right: Point2D = lower_right
 

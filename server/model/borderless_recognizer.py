@@ -481,8 +481,8 @@ def recognize(image, table, cells_bbox):
 
 
 def prepare_table(table, ready_boxes_in_rows, page):
-    upper_left = Point2D(table[0], table[3])
-    lower_right = Point2D(table[2], table[1])
+    upper_left = Point2D(table[0], table[1])
+    lower_right = Point2D(table[2], table[2])
     bbox = BBox(upper_left, lower_right)
     table = Table(bbox, page, False)
 
@@ -490,8 +490,8 @@ def prepare_table(table, ready_boxes_in_rows, page):
         row = Row()
 
         for box in final:
-            upper_left = Point2D(box[0], box[3])
-            lower_right = Point2D(box[2], box[1])
+            upper_left = Point2D(box[0], box[1])
+            lower_right = Point2D(box[2], box[3])
             bbox = BBox(upper_left, lower_right)
             cell = Cell(bbox, page)
             row.add_cell(cell)
