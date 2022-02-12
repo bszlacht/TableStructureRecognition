@@ -43,9 +43,6 @@ class NeuralNet:
                     
                     elif self.CLASSES[class_index] == 'Borderless':
                         table = Table(bbox, page_index, False)
-
-                        # thiw row will collect all the detected cells (will be grouped into rows later)
-                        table.add_row(Row())
                         borderless_tables.append(table)
                     
                     else:
@@ -56,6 +53,9 @@ class NeuralNet:
             for cell in cells:
                 for table in borderless_tables:
                     if table.bbox.overlaps(cell.bbox):
+                        if not table.rows:
+                            # thiw row will collect all the detected cells (will be grouped into rows later)
+                            table.add_row(Row())
                         table.rows[0].add_cell(cell)
 
             for table in chain(bordered_tables, borderless_tables):

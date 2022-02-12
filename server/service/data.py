@@ -17,6 +17,21 @@ class Point2D:
     def y(self) -> int:
         return self._y
 
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def __lt__(self, other):
+        return self.x < other.x and self.y < other.y
+
+    def __le__(self, other):
+        return self.x <= other.x and self.y <= other.y
+
+    def __gt__(self, other):
+        return self.x > other.x and self.y > other.y 
+
+    def __ge__(self, other):
+        return self.x >= other.x and self.y >= other.y
+
 
 class BBox:
     def __init__(self, upper_left: Point2D, lower_right: Point2D):
@@ -51,8 +66,8 @@ class BBox:
         return 0
 
     def overlaps(self, bbox: BBox) -> bool:
-        return self.upper_left.x <= bbox.lower_right.x and self.upper_left.y <= bbox.lower_right.y \
-           and bbox.upper_left.x <= self.lower_right.x and bbox.upper_left.y <= self.lower_right.y
+        return self.upper_left <= bbox.lower_right \
+           and bbox.upper_left <= self.lower_right
 
     def area(self) -> int:
         return (self._lower_right.x - self._upper_left.x) * (self._lower_right.y - self._upper_left.y)
