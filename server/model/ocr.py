@@ -84,8 +84,8 @@ class OCR:
     def process(self, document: Document) -> Document:
         for table in document.tables:
             for row in table.rows:
-                for cell in table.cells:
-                    image = table.pages[cell.page]
+                for cell in row.cells:
+                    image = document.pages[cell.page_index]
                     bbox = cell.bbox
                     
                     sub_image = image[bbox.upper_left.y:bbox.lower_right.y,
