@@ -38,7 +38,6 @@ def docs_redirect():
     return RedirectResponse('/docs')
 
 
-# TODO change name of the endpoint
 @app.post('/predict', response_model=TablesContentAndPositionResponse, tags=['table recognition'])
 async def extract_entities(body: TableRecognitionRequest = Body(..., example=example_request)):
     """Recognize tables, their structures and content"""

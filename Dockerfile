@@ -28,4 +28,4 @@ RUN pip install -e .
 RUN apt-get install tesseract-ocr -y  
 
 
-CMD ["uvicorn", "server/controller/api:app", "--host", "0.0.0.0", "--port", "8444"]
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8444"]
