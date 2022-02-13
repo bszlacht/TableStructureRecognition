@@ -20,7 +20,7 @@ class CascadeTabNetPipeline:
 
         self._neural_net = NeuralNet(
             self._model_package_path / 'config' / 'cascade_config.py',
-            self._model_package_path / 'models' / 'epoch_36.pth'
+            self._model_package_path / 'models' / 'model.pth'
         )
         
         self._bordered_table_cell_recognizer = BorderedTableCellRecognizer()
