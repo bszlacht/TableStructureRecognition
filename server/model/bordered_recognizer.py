@@ -120,26 +120,23 @@ def line_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
     return -1, -1
 
 
-def bordered(coordinates, image):  # [x1,y1,x2,y2]
-    # input:
-    boxed_image = image[coordinates[1] - 10:coordinates[3] + 10, coordinates[0] - 10:coordinates[2] + 10]
-    bw = preprocessing(boxed_image)
-    horizontal_lines = horizontal_line(bw)
-    vertical_lines = vertical_line(bw)
-    # print("VERTICAL ->" + str(vertical_lines))
-    # print("HORIZONTAl ->" + str(horizontal_lines))
+def bordered(coordinates, image):  # coordinates: [x1,y1,x2,y2]
+    boxed_image = image[coordinates[1] - 10:coordinates[3] + 10, coordinates[0] - 10:coordinates[2] + 10]   # extracting table image, that we will work on
+    x_offset = coordinates[0]   # calculating offset
+    y_offset = coordinates[1]
+    bw = preprocessing(boxed_image)     # bw = blackwhite
+    horizontal_lines = horizontal_line(bw)  # horizontal lines: [[x1,y1,x2,y2],[...],...]
+    vertical_lines = vertical_line(bw)  # vertical lines: [[x1,y1,x2,y2],[...],...]
     # find intersection points:
-    i = 0
     points = []
     for x1, y1, x2, y2 in vertical_lines:
         point = []
         for x3, y3, x4, y4 in horizontal_lines:
             x, y = line_intersection(x1, y1, x2, y2, x3, y3, x4, y4)
-            if x != -1 and y != -1:
-                i += 1
+            if x != -1 and y != -1:     # if they intersect, append to x1, y1, x2, y2 line intersections
                 point.append([x, y])
-        points.append(point)
-    # bounding boxes
+        points.append(point)    # append all intersections
+    # bounding boxes    todo:
     box = []
     last_cache = []
     for i, row in enumerate(points):
@@ -181,6 +178,13 @@ def bordered(coordinates, image):  # [x1,y1,x2,y2]
                             current_value.append(last)
         if i != 0:
             last_cache = current_value
+    # move boxes using offset
+    for i in range(len(box)):
+        for j in range(len(box[i])):
+            if j % 2 == 0:
+                box[i][j] += x_offset
+            else:
+                box[i][j] += y_offset
     return box
 
 
