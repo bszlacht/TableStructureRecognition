@@ -182,9 +182,9 @@ def bordered(coordinates, image):  # coordinates: [x1,y1,x2,y2]
     for i in range(len(box)):
         for j in range(len(box[i])):
             if j % 2 == 0:
-                box[i][j] += x_offset
+                box[i][j] += x_offset - 10
             else:
-                box[i][j] += y_offset
+                box[i][j] += y_offset - 10
     return box
 
 
