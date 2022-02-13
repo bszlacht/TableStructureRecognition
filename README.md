@@ -30,7 +30,7 @@ Alternatively, you may run all the commands from [Dockerfile](Dockerfile) by you
 
 ### Building and running
 
-Firstly, download the model and save it at the path `server/model/models/model.pth`
+Firstly, download the model from [here](https://drive.google.com/file/d/1H5d3QWf7el1oKypxhzqYNDsfggZLzUHU/view?usp=sharing) and save it at the path `server/model/models/model.pth`
 
 To build an image use `docker build -t table-structure-recognition .`
 

@@ -3,14 +3,15 @@ from copy import deepcopy
 import cv2
 import numpy as np
 from ..service import Point2D, BBox, Cell, Row, Table, Document
+from typing import List, Tuple
 
 
 class Points:
     def __init__(self):
-        self._x1 = []
-        self._x2 = []
+        self._x1: List[int] = []
+        self._x2: List[int] = []
 
-    def add(self, x1, x2):
+    def add(self, x1: int, x2: int):
         self._x1.append(x1)
         self._x2.append(x2)
 
@@ -18,20 +19,21 @@ class Points:
         self._x1 = []
         self._x2 = []
 
-    def get_len(self):
+    def get_len(self) -> int:
         return len(self._x1)
 
-    def get_best_line_coordinates(self):
+    def get_best_line_coordinates(self) -> Tuple[int, int]:
         return min(self._x1), max(self._x2)  # the widest line
 
-def preprocessing(image):
+
+def preprocessing(image: List[np.ndarray]):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     bw = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 15, 1)
     bw = cv2.bitwise_not(bw)  # turning black to white and white to black
     return bw
 
 
-def vertical_line(bw):
+def vertical_line(bw: List[np.ndarray]):
     vertical = bw.copy()
     vertical_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 15))
     # morfology:
@@ -69,7 +71,7 @@ def vertical_line(bw):
     return res
 
 
-def horizontal_line(bw):
+def horizontal_line(bw: List[np.ndarray]):
     horizontal = bw.copy()
     horizontal_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (15, 1))
     # morfology:
@@ -114,29 +116,33 @@ def horizontal_line(bw):
 
 
 def line_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
-    if (x1 >= x3 - 5 or x1 >= x3 + 5) and (x1 <= x4 + 5 or x1 <= x4 - 5) and (
-            y3 + 8 >= min(y1, y2) or y3 - 5 >= min(y1, y2)) and y3 <= max(y1, y2) + 5:
+    if min(x3, x4) - 5 <= x1 <= max(x3, x4) + 5 and min(y1, y2) - 8 <= y3 <= max(y1, y2) + 8:
         return x1, y3
     return -1, -1
 
 
-def bordered(coordinates, image):  # coordinates: [x1,y1,x2,y2]
-    boxed_image = image[coordinates[1] - 10:coordinates[3] + 10, coordinates[0] - 10:coordinates[2] + 10]   # extracting table image, that we will work on
+def bordered(coordinates: List[int], image: List[np.ndarray]):  # [x1,y1,x2,y2]
+    # input:
+    boxed_image = image[coordinates[1] - 10:coordinates[3] + 10, coordinates[0] - 10:coordinates[2] + 10]
     x_offset = coordinates[0]   # calculating offset
     y_offset = coordinates[1]
-    bw = preprocessing(boxed_image)     # bw = blackwhite
-    horizontal_lines = horizontal_line(bw)  # horizontal lines: [[x1,y1,x2,y2],[...],...]
-    vertical_lines = vertical_line(bw)  # vertical lines: [[x1,y1,x2,y2],[...],...]
+    bw = preprocessing(boxed_image)
+    horizontal_lines = horizontal_line(bw)
+    vertical_lines = vertical_line(bw)
+    # print("VERTICAL ->" + str(vertical_lines))
+    # print("HORIZONTAl ->" + str(horizontal_lines))
     # find intersection points:
+    i = 0
     points = []
-    for x1, y1, x2, y2 in vertical_lines:
+    for x3, y3, x4, y4 in horizontal_lines:
         point = []
-        for x3, y3, x4, y4 in horizontal_lines:
+        for x1, y1, x2, y2 in vertical_lines:
             x, y = line_intersection(x1, y1, x2, y2, x3, y3, x4, y4)
-            if x != -1 and y != -1:     # if they intersect, append to x1, y1, x2, y2 line intersections
+            if x != -1 and y != -1:
+                i += 1
                 point.append([x, y])
-        points.append(point)    # append all intersections
-    # bounding boxes    todo:
+        points.append(point)
+    # bounding boxes
     box = []
     last_cache = []
     for i, row in enumerate(points):
@@ -153,14 +159,14 @@ def bordered(coordinates, image):  # coordinates: [x1,y1,x2,y2]
                 flag = 1
                 index = []
                 for k, last in enumerate(last_cache):
-                    if col[1] == last[1] and last_cache[k][4] == 9999:
+                    if col[0] == last[0] and last_cache[k][4] == 9999:
                         last_cache[k][4] = col[0]
                         last_cache[k][5] = col[1]
                         if last_cache[k][4] != 9999 and last_cache[k][6] != 9999:
                             box.append(last_cache[k])
                             index.append(k)
                             flag = 1
-                    if next_col[1] == last[3] and last_cache[k][6] == 9999:
+                    if next_col[0] == last[2] and last_cache[k][6] == 9999:
                         last_cache[k][6] = next_col[0]
                         last_cache[k][7] = next_col[1]
                         if last_cache[k][4] != 9999 and last_cache[k][6] != 9999:
@@ -194,19 +200,22 @@ class BorderedTableCellRecognizer:
         images = document.pages
         row = []
         for table in tables:
-            for en, (x1, y1, x2, y2, x3, y3, x4, y4) in enumerate(bordered(table.bbox.to_array(), images[table.page_index])):
+            for en, (x1, y1, x2, y2, x3, y3, x4, y4) in enumerate(
+                    bordered(table.bbox.to_array(), images[table.page_index])):
                 if en == 0:
-                    last_row = x1
-                if last_row == x1:
-                    row.append(Cell(BBox(Point2D(min(x1, x2, x3, x4), min(y1, y2, y3, y4)), Point2D(max(x1, x2, x3, x4), max(y1, y2, y3, y4))), table.page_index))
+                    last_row = y1
+                if last_row == y1:
+                    row.append(Cell(BBox(Point2D(min(x1, x2, x3, x4), min(y1, y2, y3, y4)),
+                                         Point2D(max(x1, x2, x3, x4), max(y1, y2, y3, y4))), table.page_index))
                 else:
-                    last_row = x1
+                    last_row = y1
                     r = Row()
                     for cell in row:
                         r.add_cell(cell)
                     table.add_row(r)
                     row = []
-                    row.append(Cell(BBox(Point2D(min(x1, x2, x3, x4), min(y1, y2, y3, y4)), Point2D(max(x1, x2, x3, x4), max(y1, y2, y3, y4))), table.page_index))
+                    row.append(Cell(BBox(Point2D(min(x1, x2, x3, x4), min(y1, y2, y3, y4)),
+                                         Point2D(max(x1, x2, x3, x4), max(y1, y2, y3, y4))), table.page_index))
         r = Row()
         for cell in row:
             r.add_cell(cell)
@@ -225,7 +234,7 @@ if __name__ == '__main__':
 
     bbox = BBox(upper_left, lower_right)
 
-    table = Table(bbox, 0)
+    table = Table(bbox, 0, True)
 
     document.add_table(table)
 
