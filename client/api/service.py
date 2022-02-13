@@ -1,5 +1,5 @@
-from FileReader.DataInstance import DataInstance
-# from input.Model import Model
+from client.input.data_instance import DataInstance
+from ..input.model_builder import Model
 
 from ipaddress import ip_address
 from urllib.parse import urlparse
@@ -17,7 +17,7 @@ class Service:
     def predict(self, model: Model, data_instance: DataInstance):
         request = Request(model, data_instance)
         result = self.handler.send(request, "/predict")
-        print(result)
+        return result
 
     @staticmethod
     def parse_ip_port(address):
