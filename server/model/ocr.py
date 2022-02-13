@@ -1,5 +1,5 @@
 from operator import itemgetter
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from copy import copy
 
 import numpy as np
@@ -12,7 +12,7 @@ from ..service import Document
 class OCR:
     SUPPORTED_LANGUAGES = ['en', 'pl', 'uk', 'ru']
 
-    def __init__(self, library: str, lang: str | List[str] = 'pl') -> None:
+    def __init__(self, library: str, lang: Union[str, List[str]] = 'pl') -> None:
         self._library = library.lower()
         if self._library not in ['tesseract', 'easyocr']:
             raise ValueError('library can be either "Tesseract" or "EasyOCR"')
@@ -30,7 +30,7 @@ class OCR:
             # TODO check if there will be enough RAM/VRAM for all the models
             self._reader = easyocr.Reader(lang, 
                                           gpu=True, 
-                                          download_enable=True, 
+                                          download_enabled=True, 
                                           detector=True, 
                                           recognizer=True)
 
@@ -57,8 +57,10 @@ class OCR:
         if self.library == 'easyocr':
             recognized = self._reader.readtext(image)
         elif self.library == 'tesseract':
-            result = pytesseract.image_to_data(image, lang='+'.join(self.lang))
-            valid_idxs = [i for i in range(result['text'])\
+            result = pytesseract.image_to_data(image, 
+                                               lang='+'.join(self.lang), 
+                                               output_type=pytesseract.Output.DICT)
+            valid_idxs = [i for i in range(len(result['text']))\
                           if result['text'][i] and result['conf'][i] != '-1']
             
             recognized = []
@@ -75,7 +77,7 @@ class OCR:
                     [l,     t + h]
                 ]
 
-                recognized.append((points, result['text'][idx], points['conf'][idx]))
+                recognized.append((points, result['text'][idx], result['conf'][idx]))
         else:
             raise TypeError('unknown OCR library set. Must be either "Tesseract" or "EasyOCR"')
 
@@ -84,8 +86,8 @@ class OCR:
     def process(self, document: Document) -> Document:
         for table in document.tables:
             for row in table.rows:
-                for cell in table.cells:
-                    image = table.pages[cell.page]
+                for cell in row.cells:
+                    image = document.pages[cell.page_index]
                     bbox = cell.bbox
                     
                     sub_image = image[bbox.upper_left.y:bbox.lower_right.y,
@@ -93,9 +95,9 @@ class OCR:
 
                     recognized = self.recognize(sub_image)
 
-                    max_score = max(recognized, key=itemgetter(2))
-                    max_score_idx = [i for i, (_, _, score) in enumerate(recognized) if score == max_score][0]
+                    if recognized:
+                        best_score_result = max(recognized, key=itemgetter(2))
 
-                    cell.text = recognized[max_score_idx][1]
+                        cell.text = best_score_result[1]
         
         return document

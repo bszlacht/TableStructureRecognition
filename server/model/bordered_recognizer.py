@@ -2,7 +2,6 @@ from copy import deepcopy
 
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 from ..service import Point2D, BBox, Cell, Row, Table, Document
 
 
@@ -24,13 +23,6 @@ class Points:
 
     def get_best_line_coordinates(self):
         return min(self._x1), max(self._x2)  # the widest line
-
-
-# TODO do we need this??
-def display(I):
-    plt.imshow(I, cmap='gray')
-    plt.show()
-
 
 def preprocessing(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -202,7 +194,7 @@ class BorderedTableCellRecognizer:
                 if en == 0:
                     last_row = x1
                 if last_row == x1:
-                    row.append(Cell(BBox(Point2D(min(x1, x2, x3, x4), max(y1, y2, y3, y4)), Point2D(max(x1, x2, x3, x4), min(y1, y2, y3, y4))), table.page_index))
+                    row.append(Cell(BBox(Point2D(min(x1, x2, x3, x4), min(y1, y2, y3, y4)), Point2D(max(x1, x2, x3, x4), max(y1, y2, y3, y4))), table.page_index))
                 else:
                     last_row = x1
                     r = Row()
@@ -210,7 +202,7 @@ class BorderedTableCellRecognizer:
                         r.add_cell(cell)
                     table.add_row(r)
                     row = []
-                    row.append(Cell(BBox(Point2D(min(x1, x2, x3, x4), max(y1, y2, y3, y4)), Point2D(max(x1, x2, x3, x4), min(y1, y2, y3, y4))), table.page_index))
+                    row.append(Cell(BBox(Point2D(min(x1, x2, x3, x4), min(y1, y2, y3, y4)), Point2D(max(x1, x2, x3, x4), max(y1, y2, y3, y4))), table.page_index))
         r = Row()
         for cell in row:
             r.add_cell(cell)

@@ -1,7 +1,6 @@
 import json
 
-# from .data import *
-from server.service import *
+from .data import *
 
 
 class Converter:
@@ -23,18 +22,18 @@ class Converter:
 
             table_entry["content"] = content
 
-            table_entry["page"] = table.page_index  # TODO maybe change this property to contain multiple page indexes?
+            table_entry["page"] = int(table.page_index)  # TODO maybe change this property to contain multiple page indexes?
 
             # TODO decide if we want only BoundingBoxResponse or List[BoundingBoxResponse] - currently first option
 
             table_entry["bbox"] = {
                 "top_left": {
-                    "x": table.bbox.upper_left.x,
-                    "y": table.bbox.upper_left.y
+                    "x": int(table.bbox.upper_left.x),
+                    "y": int(table.bbox.upper_left.y)
                 },
                 "bottom_right": {
-                    "x": table.bbox.lower_right.x,
-                    "y": table.bbox.lower_right.y
+                    "x": int(table.bbox.lower_right.x),
+                    "y": int(table.bbox.lower_right.y)
                 }
             }
 
@@ -44,12 +43,12 @@ class Converter:
                 for cell in row.cells:
                     single_row_bboxs.append({
                         "top_left": {
-                            "x": cell.bbox.upper_left.x,
-                            "y": cell.bbox.upper_left.y
+                            "x": int(cell.bbox.upper_left.x),
+                            "y": int(cell.bbox.upper_left.y)
                         },
                         "bottom_right": {
-                            "x": cell.bbox.lower_right.x,
-                            "y": cell.bbox.lower_right.y
+                            "x": int(cell.bbox.lower_right.x),
+                            "y": int(cell.bbox.lower_right.y)
                         }
                     })
                 cell_bboxs.append(single_row_bboxs)
@@ -58,7 +57,7 @@ class Converter:
 
             result.append(table_entry)
 
-        return json.dumps(result, indent=2)
+        return result
 
 
 # code for tests

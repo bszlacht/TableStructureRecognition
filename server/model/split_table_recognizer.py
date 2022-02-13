@@ -21,6 +21,11 @@ class SplitTableRecognizer:
 
 
 class SplitTableModel(SplitTableRecognizer):
+    
+    def __init__(self, model_path: str) -> None:
+        super().__init__()
+
+        self._model = pickle.load(open(model_path, 'rb'))
 
     def process(self, document: Document) -> Document:
 
@@ -52,8 +57,7 @@ class SplitTableModel(SplitTableRecognizer):
         ]]
 
     def predict(self, X: list) -> bool:
-        model = pickle.load(open("models/model.sav", 'rb'))
-        result = model.predict(X)
+        result = self.model.predict(X)
         return result[0]
 
 

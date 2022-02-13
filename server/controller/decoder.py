@@ -10,6 +10,7 @@ class Decoder:
         pass
 
     def decode(self, data):
+        data = data.encode('ascii')
         decoded = base64.decodebytes(data)
         image = Image.open(io.BytesIO(decoded))
 

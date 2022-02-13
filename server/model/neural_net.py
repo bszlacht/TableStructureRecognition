@@ -15,7 +15,7 @@ class NeuralNet:
                  checkpoint_file: str = None,
                  device: str = 'cuda:0') -> None:
                  
-       self.model: CascadeRCNN = init_detector(config_file, checkpoint_file, device)
+       self.model: CascadeRCNN = init_detector(str(config_file), str(checkpoint_file), device)
 
     def predict(self, document: Document, threshold: float = 0.85) -> Document:
         for page_index, page in enumerate(document.pages):
@@ -32,8 +32,8 @@ class NeuralNet:
                     if element[4] < threshold:
                         continue
 
-                    upper_left = Point2D(element[0], element[1])
-                    lower_right = Point2D(element[2], element[3])
+                    upper_left = Point2D(int(element[0]), int(element[1]))
+                    lower_right = Point2D(int(element[2]), int(element[3]))
 
                     bbox = BBox(upper_left, lower_right)
 
@@ -43,9 +43,6 @@ class NeuralNet:
                     
                     elif self.CLASSES[class_index] == 'Borderless':
                         table = Table(bbox, page_index, False)
-
-                        # thiw row will collect all the detected cells (will be grouped into rows later)
-                        table.add_row(Row())
                         borderless_tables.append(table)
                     
                     else:
@@ -56,6 +53,9 @@ class NeuralNet:
             for cell in cells:
                 for table in borderless_tables:
                     if table.bbox.overlaps(cell.bbox):
+                        if not table.rows:
+                            # thiw row will collect all the detected cells (will be grouped into rows later)
+                            table.add_row(Row())
                         table.rows[0].add_cell(cell)
 
             for table in chain(bordered_tables, borderless_tables):
