@@ -22,10 +22,12 @@ WORKDIR /workspace
 COPY server /workspace/server
 COPY setup.py /workspace/setup.py
 
+RUN pip install --upgrade pip 
+
 RUN pip install -e .
 
 # TODO move this to the very start
 RUN apt-get install tesseract-ocr -y  
 
-
+WORKDIR /workspace/server/controller
 CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8444"]

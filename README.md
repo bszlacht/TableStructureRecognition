@@ -26,4 +26,6 @@ All of this allows docker to use GPU during build time, as it is needed to compi
 
 Alternatively, you may run all the commands from [Dockerfile](Dockerfile) by yourself, after running a container, because the GPU will be available then.
 
-To run a container use `docker run -p <your port>:<will be changed> --gpus all --shm-size 6G <image name/id>`
+To build an image use `docker build -t table-structure-recognition .`
+
+To run a container use `docker run -p <your port>:8444 --gpus all --shm-size 6G table-structure-recognition`
