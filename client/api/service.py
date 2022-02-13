@@ -17,7 +17,7 @@ class Service:
     def predict(self, model: Model, data_instance: DataInstance):
         request = Request(model, data_instance)
         result = self.handler.send(request, "/predict")
-        print(result)
+        return result
 
     @staticmethod
     def parse_ip_port(address):

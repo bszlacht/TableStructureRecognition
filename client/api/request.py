@@ -19,7 +19,7 @@ class Request:
 
         content = {"model": model.config, "data": [{"document_id": 1,
                                                     "pages": pages,
-                                                    "page_width": len(data_instance.data[0]),
-                                                    "page_height": len(data_instance.data)}]}
+                                                    "page_width": len(data_instance.data[0][0]),
+                                                    "page_height": len(data_instance.data[0])}]}
 
         return content

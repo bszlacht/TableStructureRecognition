@@ -19,4 +19,4 @@ class ConnectionHandler:
         if response.status_code == 201:
             return response.json()
         else:
-            pass
+            return -1
