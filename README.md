@@ -2,6 +2,8 @@
 
 ## Running docker container
 
+### Preparing the environment
+
 To run docker first install `sudo apt install nvidia-container-runtime`
 
 Make sure you have `nvidia-docker2` installed too!
@@ -26,6 +28,9 @@ All of this allows docker to use GPU during build time, as it is needed to compi
 
 Alternatively, you may run all the commands from [Dockerfile](Dockerfile) by yourself, after running a container, because the GPU will be available then.
 
+### Building and running
+
+Firstly, download the model and save it at the path `server/model/models/model.pth`
 
 To build an image use `docker build -t table-structure-recognition .`
 
