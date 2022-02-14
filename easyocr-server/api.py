@@ -1,4 +1,5 @@
 from pathlib import Path
+import logging
 
 from fastapi import FastAPI
 from fastapi import Body
@@ -12,6 +13,10 @@ from models import (
 )
 from decoder import Decoder
 from ocr import OCR
+
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)-5s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 app = FastAPI(
@@ -34,14 +39,16 @@ def docs_redirect():
 @app.post('/recognize', response_model=OCRResponse, tags=['optical character recognition'])
 async def extract_entities(body: OCRRequest = Body(...)):
     try:
-        ocr = OCR(body.lang)
+        ocr = OCR(body.library, body.lang)
 
         images = [decoder.decode(image) for image in body.images]
         texts = [ocr.recognize(image) for image in images]
 
         ocr = None
     except Exception as ex:
+        logger.exception(ex)
         return {
+            'texts': [],
             'errors': [{'message': str(ex)}]
         }
 

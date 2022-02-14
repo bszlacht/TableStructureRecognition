@@ -28,7 +28,7 @@ class CascadeTabNetPipeline:
 
         self._split_table_recognizer: SplitTableRecognizer = None
 
-        self._ocr: OCR = None
+        self._ocr: OCR = OCR('tsr_easyocr', 8333)
 
     def configure(self, config: dict) -> dict:
         if config['splitted_table_recognition'] == 'heuristic':
@@ -36,11 +36,8 @@ class CascadeTabNetPipeline:
         else:
             self._split_table_recognizer = SplitTableModel(self._model_package_path / 'models' / 'model.sav')
 
-        self._ocr = OCR(config['ocr'], config['lang'])
-
     def flush(self):
         self._split_table_recognizer = None
-        self._ocr = None
 
     def run(self, document: Document, config: dict) -> Document:
         logger.info('Configuring models')        
@@ -53,11 +50,11 @@ class CascadeTabNetPipeline:
         document = self._bordered_table_cell_recognizer.recognize(document)
         document = self._borderless_table_cell_recognizer.recognize(document)
 
+        logger.info('Filling in the tables with recognized text')
+        document = self._ocr.process(document, config['ocr'], config['lang'])
+
         logger.info('Trying to join splitted tables')
         document = self._split_table_recognizer.process(document)
-
-        logger.info('Filling in the tables with recognized text')
-        document = self._ocr.process(document)
 
         self.flush()
 

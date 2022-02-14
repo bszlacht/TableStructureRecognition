@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 class OCRRequest(BaseModel):
     images: List[str]
     lang: List[str]
+    library: str = Field(regex=r'tesseract|easyocr')
 
 
 class Message(BaseModel):

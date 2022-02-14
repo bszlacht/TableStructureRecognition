@@ -3,13 +3,18 @@ from typing import List, Tuple, Union
 from copy import copy
 
 import numpy as np
+import pytesseract
 import easyocr
 
 
 class OCR:
     SUPPORTED_LANGUAGES = ['en', 'pl', 'uk', 'ru']
 
-    def __init__(self, lang: Union[str, List[str]] = 'pl') -> None:
+    def __init__(self, library: str, lang: Union[str, List[str]] = 'pl') -> None:
+        self._library = library.lower()
+        if self._library not in ['tesseract', 'easyocr']:
+            raise ValueError('library can be either "Tesseract" or "EasyOCR"')
+
         if isinstance(lang, str):
             lang = [lang]
 
@@ -19,11 +24,23 @@ class OCR:
 
         self._lang = lang
 
-        self._reader = easyocr.Reader(lang, 
-                                      gpu=True, 
-                                      download_enabled=True, 
-                                      detector=True, 
-                                      recognizer=True)
+        if self._library == 'easyocr':
+            # TODO check if there will be enough RAM/VRAM for all the models
+            self._reader = easyocr.Reader(lang, 
+                                          gpu=True, 
+                                          download_enabled=True, 
+                                          detector=True, 
+                                          recognizer=True)
+
+        elif self._library == 'tesseract':
+            lang_code_map = {
+                'en': 'eng',
+                'pl': 'pol',
+                'uk': 'ukr',
+                'ru': 'rus'
+            }
+
+            self._lang = [lang_code_map[lang_code] for lang_code in self._lang]
 
     @property
     def library(self) -> str:
@@ -34,7 +51,35 @@ class OCR:
         return copy(self._lang)
 
     # list of tuples (<list of 4 points>, <text string>, <score>)
-    def recognize(self, image: np.ndarray) -> Tuple[List[List[int]], str, float]:
-        recognized = self._reader.readtext(image)
+    def recognize(self, image: np.ndarray) -> List[Tuple[List[List[int]], str, float]]:
+        if self.library == 'easyocr':
+            recognized = self._reader.readtext(image)
+        elif self.library == 'tesseract':
+            result = pytesseract.image_to_data(image, 
+                                               lang='+'.join(self.lang), 
+                                               output_type=pytesseract.Output.DICT)
+            valid_idxs = [i for i in range(len(result['text']))\
+                          if result['text'][i] and result['conf'][i] != '-1']
+            
+            recognized = []
+            for idx in valid_idxs:
+                t, l, h, w = (result['top'][idx],
+                              result['left'][idx],
+                              result['height'][idx],
+                              result['width'][idx])
+
+                points = [
+                    [l,     t],
+                    [l + w, t],
+                    [l + w, t + h],
+                    [l,     t + h]
+                ]
+
+                recognized.append((points, result['text'][idx], result['conf'][idx]))
+        else:
+            raise TypeError('unknown OCR library set. Must be either "Tesseract" or "EasyOCR"')
+
+        if recognized:
+            return max(recognized, key=itemgetter(2))[1]
         
-        return max(recognized, key=itemgetter(2))[1]
+        return ''

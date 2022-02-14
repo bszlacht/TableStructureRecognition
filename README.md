@@ -32,9 +32,9 @@ Alternatively, you may run all the commands from [Dockerfile](Dockerfile) by you
 
 Firstly, download the model from [here](https://drive.google.com/file/d/1H5d3QWf7el1oKypxhzqYNDsfggZLzUHU/view?usp=sharing) and save it at the path `server/model/models/model.pth`
 
-To build an image use `docker build -t table-structure-recognition .`
+Server will use port 8444, you can specify another one in the [docker-compose.yml](docker-compose.yml)
 
-To run a container use `docker run -p <your port>:8444 --gpus all --shm-size 6G table-structure-recognition:latest`
+Run `docker-compose up` to start all the containers 
 
 ## Running client
 

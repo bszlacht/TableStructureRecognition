@@ -42,14 +42,21 @@ def docs_redirect():
 async def extract_entities(body: TableRecognitionRequest = Body(..., example=example_request)):
     """Recognize tables, their structures and content"""
 
-    model_configuration = body.model.dict()
+    try:
+        model_configuration = body.model.dict()
 
-    tables = []
-    for document in body.data:
-        pages = [decoder.decode(page) for page in document.pages]
-        for recognized_table in model.predict(pages, document.page_width, document.page_height,  model_configuration):
-            recognized_table.update({'document_id': document.document_id})
-            tables.append(recognized_table)
+        tables = []
+        for document in body.data:
+            pages = [decoder.decode(page) for page in document.pages]
+            for recognized_table in model.predict(pages, document.page_width, document.page_height,  model_configuration):
+                recognized_table.update({'document_id': document.document_id})
+                tables.append(recognized_table)
+    except Exception as ex:
+        logger.exception(ex)
+        return {
+            'tables': [],
+            'errors': [{'message': str(ex)}]
+        }
 
     logger.info('Sending response')
 

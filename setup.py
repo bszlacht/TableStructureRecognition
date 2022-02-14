@@ -13,8 +13,6 @@ setup(
         'opencv-python',
         'scikit-learn',
         'pandas',
-        'pytesseract',
-        'easyocr',
         'srsly'
     ],
     package_data={'': ['*']}  # TODO maybe change to this

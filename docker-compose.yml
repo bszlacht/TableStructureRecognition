@@ -5,6 +5,7 @@ services:
       context: ./easyocr-server
       dockerfile: Dockerfile
     container_name: 'tsr_easyocr'
+    hostname: 'tsr_easyocr'
     ports:
       - 8333:8333
     networks:

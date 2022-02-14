@@ -14,6 +14,7 @@ RUN apt-get update -y && \
     libxrender-dev \
     libgl1-mesa-dev \
     git \
+    tesseract-ocr \
     # cleanup
     && apt-get autoremove -y \
     && apt-get clean -y \
@@ -31,7 +32,7 @@ RUN cd "$service_home" \
     && python setup.py build_ext --inplace -j 4 \
     && python -m pip install -e .
 
-RUN pip install fastapi==0.71.0 uvicorn==0.17.0 pillow numpy
+RUN pip install fastapi==0.71.0 uvicorn==0.17.0 pillow numpy pytesseract
 
 COPY . .
 
