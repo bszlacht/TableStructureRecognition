@@ -29,21 +29,22 @@ class SplitTableModel(SplitTableRecognizer):
 
     def process(self, document: Document) -> Document:
 
-        for i in range(len(document.tables) - 1):
-            table1 = document.tables[i]
-            table2 = document.tables[i + 1]
+        for i, table1 in enumerate(document.tables):
+            for j, table2 in enumerate(document.tables):
+                if i == j:
+                    continue
 
-            if table2.page_index - table1.page_index != 1:
-                continue
+                if table2.page_index - table1.page_index != 1:
+                    continue
 
-            if self.column_number_diff(table1, table2) != 0:
-                continue
+                if self.column_number_diff(table1, table2) != 0:
+                    continue
 
-            X = self.calculate_x(document, table1, table2)
+                X = self.calculate_x(document, table1, table2)
 
-            if self.predict(X):
-                document.tables[i + 1] = self.merge(table1, table2)
-                document.remove_table(i)
+                if self.predict(X):
+                    document.tables[i + 1] = self.merge(table1, table2)
+                    document.remove_table(i)
 
         return document
 
@@ -75,14 +76,16 @@ class SplitTableHeuristic(SplitTableRecognizer):
         if not self._margin:
             self._margin = 0.12 * document.height
 
-        for i in range(len(document.tables) - 1):
-            table1 = document.tables[i]
-            table2 = document.tables[i + 1]
-            if self.check_merge(table1, table2, document.height):
-                document.tables[i + 1] = self.merge(table1, table2)
-                document.remove_table(i)
+        for i, table1 in enumerate(document.tables):
+            for j, table2 in enumerate(document.tables):
+                if i == j:
+                    continue
 
-        return document
+                if self.check_merge(table1, table2, document.height):
+                    document.tables[i + 1] = self.merge(table1, table2)
+                    document.remove_table(i)
+
+            return document
 
     def check_merge(self, table1: Table, table2: Table, page_height: int) -> bool:
 

@@ -50,13 +50,17 @@ class OCR:
         cells = []
         images = []
         for table in document.tables:
+            padding = 0
+            if table.is_borderless:
+                padding = 7
+
             for row in table.rows:
                 for cell in row.cells:
                     image = document.pages[cell.page_index]
                     bbox = cell.bbox
                     
-                    sub_image = image[bbox.upper_left.y:bbox.lower_right.y,
-                                      bbox.upper_left.x:bbox.lower_right.x]
+                    sub_image = image[bbox.upper_left.y - padding : bbox.lower_right.y + padding,
+                                      bbox.upper_left.x - padding : bbox.lower_right.x + padding]
 
                     cells.append(cell)
                     images.append(sub_image)

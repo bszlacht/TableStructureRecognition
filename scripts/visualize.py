@@ -39,10 +39,11 @@ if __name__ == "__main__":
             for cell_bbox in chain(*table['cell_bboxs']):
                 image = visualize_bbox(image, cell_bbox, rgb=(0, 0, 255))
 
-        cv2.imshow('detected elements', image)
-        
-        while True:
-            k = cv2.waitKey(1) & 0xff
-            if k == 27: break
+            cv2.namedWindow("output", cv2.WINDOW_NORMAL)
+            cv2.imshow("output", image)
+            
+            while True:
+                k = cv2.waitKey(1) & 0xff
+                if k == 27: break
     else:
         print('No tables detected')
