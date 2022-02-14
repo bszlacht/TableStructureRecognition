@@ -54,6 +54,6 @@ To install a package simply run `pip install .` in the main directory, this will
 4. Set address for your Docker server (and chosen port)
 5. Use Service predict method to get the result.
 
-# Running scripts
+## Running scripts
 
 We have created some useful scripts for you to try out! You can check how to use them via `python <script>.py -h`.
