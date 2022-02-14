@@ -216,11 +216,12 @@ class BorderedTableCellRecognizer:
                     row = []
                     row.append(Cell(BBox(Point2D(min(x1, x2, x3, x4), min(y1, y2, y3, y4)),
                                          Point2D(max(x1, x2, x3, x4), max(y1, y2, y3, y4))), table.page_index))
-        r = Row()
-        for cell in row:
-            r.add_cell(cell)
-        tables[len(tables) - 1].add_row(r)
-        row = []
+        
+            r = Row()
+            for cell in row:
+                r.add_cell(cell)
+            table.add_row(r)
+
         return document
 
 
