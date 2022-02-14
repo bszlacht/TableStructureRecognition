@@ -1,7 +1,5 @@
-from client.input.data_instance import DataInstance
-from ..input.model_builder import Model
-
-from client.api.encoder import Encoder
+from ..input import Model, DataInstance
+from .encoder import Encoder
 
 
 class Request:
@@ -15,11 +13,11 @@ class Request:
         pages = []
 
         for arr in data_instance.data:
-            pages.append(self.encoder.encode(arr))
+            pages.append(self.encoder.encode(arr).decode('ascii'))
 
         content = {"model": model.config, "data": [{"document_id": 1,
                                                     "pages": pages,
-                                                    "page_width": len(data_instance.data[0][0]),
-                                                    "page_height": len(data_instance.data[0])}]}
+                                                    "page_width": data_instance.page_width,
+                                                    "page_height": data_instance.page_height}]}
 
         return content

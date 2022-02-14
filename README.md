@@ -42,13 +42,18 @@ Sometimes EasyOCR may have a problem with downloading a model, you may see this 
 
 ## Running client
 
-Use `client_input.py` file to provide with input file and model parameters. 
+To install a package simply run `pip install .` in the main directory, this will install `tsr` package, which provides all the functionalities you need.
+
 1. Use FileReader class to load document.
-2. Convert data to DataInstance class using FileReader convert method.
+2. Read data to DataInstance class using FileReader read method.
 3. Construct model using desirable parameters:
     - method for recognizing split tables: "model" or "heuristic"
     - OCR method: "tesseract" or "easyocr"
     - language for OCR: "pl", "en", "uk", "ru"
     - threshold - to determine the level of certainty - float between 0.0 and 1.0
-4. Set address for your Docker server (and choosen port)
+4. Set address for your Docker server (and chosen port)
 5. Use Service predict method to get the result.
+
+# Running scripts
+
+We have created some useful scripts for you to try out! You can check how to use them via `python <script>.py -h`.

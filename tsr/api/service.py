@@ -1,11 +1,9 @@
-from client.input.data_instance import DataInstance
-from ..input.model_builder import Model
-
 from ipaddress import ip_address
 from urllib.parse import urlparse
 
-from client.api.request import Request
-from client.api.connection_handler import ConnectionHandler
+from ..input import DataInstance, Model
+from .request import Request
+from .connection_handler import ConnectionHandler
 
 
 class Service:

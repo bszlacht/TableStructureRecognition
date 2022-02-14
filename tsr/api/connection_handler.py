@@ -9,14 +9,18 @@ class ConnectionHandler:
         self.port = port
         self.scheme = scheme
 
+    @property
+    def url(self) -> str:
+        return f'{self.scheme}{self.ip}:{self.port}'
+
     def send(self, request, endpoint):
         data = request.content
         headers = request.headers
-        url = self.scheme + str(self.ip) + ':' + self.port + endpoint
+        url = self.url + endpoint
 
         response = requests.post(url, data=json.dumps(data), headers=headers)
 
-        if response.status_code == 201:
+        if response.status_code == 200:
             return response.json()
         else:
             return -1

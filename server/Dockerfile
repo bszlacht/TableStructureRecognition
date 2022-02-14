@@ -20,7 +20,7 @@ WORKDIR /workspace
 
 
 COPY server /workspace/server
-COPY setup.py /workspace/setup.py
+RUN mv /workspace/server/setup.py /workspace/setup.py
 
 RUN pip install --upgrade pip 
 

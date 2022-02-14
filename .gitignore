@@ -63,3 +63,5 @@ bower_components
 **/INFO
 **/.ipynb_checkpoints
 **.zip
+
+scripts/response.json
