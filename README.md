@@ -36,6 +36,10 @@ Server will use port 8444, you can specify another one in the [docker-compose.ym
 
 Run `docker-compose up` to start all the containers 
 
+### Troubleshooting
+
+Sometimes EasyOCR may have a problem with downloading a model, you may see this in logs. To fix it you simply need to restart docker daemon with `sudo systemctl restart docker`
+
 ## Running client
 
 Use `client_input.py` file to provide with input file and model parameters. 

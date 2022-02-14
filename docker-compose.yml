@@ -14,7 +14,7 @@ services:
   server:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: server/Dockerfile
     container_name: 'tsr_server'
     depends_on:
       - "easyocr"
