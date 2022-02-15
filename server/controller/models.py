@@ -41,7 +41,7 @@ class TableContentAndPositionResponse(BaseModel):
     content: List[List[str]]
     page: Union[int, List[int]]
     bbox: Union[BoundingBoxResponse, List[BoundingBoxResponse]]
-    cell_bboxs: List[List[BoundingBoxResponse]]
+    cell_bboxes: List[List[BoundingBoxResponse]]
 
 
 class TablesContentAndPositionResponse(BaseModel):

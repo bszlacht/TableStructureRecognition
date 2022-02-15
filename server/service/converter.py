@@ -4,6 +4,20 @@ from .data import *
 
 
 class Converter:
+    
+    @staticmethod
+    def bbox_to_json(bbox: BBox):
+        return {
+            "top_left": {
+                "x": int(bbox.upper_left.x),
+                "y": int(bbox.upper_left.y)
+            },
+            "bottom_right": {
+                "x": int(bbox.lower_right.x),
+                "y": int(bbox.lower_right.y)
+            }
+        }
+
 
     @staticmethod
     def convert_to_json(document: Document):
@@ -22,38 +36,26 @@ class Converter:
 
             table_entry["content"] = content
 
-            table_entry["page"] = int(table.page_index)  # TODO maybe change this property to contain multiple page indexes?
+            if isinstance(table.page_index, list):
+                table_entry["page"] = [int(idx) for idx in table.page_index]
+            else:
+                table_entry["page"] = int(table.page_index)
 
             # TODO decide if we want only BoundingBoxResponse or List[BoundingBoxResponse] - currently first option
 
-            table_entry["bbox"] = {
-                "top_left": {
-                    "x": int(table.bbox.upper_left.x),
-                    "y": int(table.bbox.upper_left.y)
-                },
-                "bottom_right": {
-                    "x": int(table.bbox.lower_right.x),
-                    "y": int(table.bbox.lower_right.y)
-                }
-            }
+            if isinstance(table.bbox, list):
+                table_entry["bbox"] = [Converter.bbox_to_json(bbox) for bbox in table.bbox]
+            else:
+                table_entry["bbox"] = Converter.bbox_to_json(table.bbox)
 
             cell_bboxs = []
             for row in table.rows:
                 single_row_bboxs = []
                 for cell in row.cells:
-                    single_row_bboxs.append({
-                        "top_left": {
-                            "x": int(cell.bbox.upper_left.x),
-                            "y": int(cell.bbox.upper_left.y)
-                        },
-                        "bottom_right": {
-                            "x": int(cell.bbox.lower_right.x),
-                            "y": int(cell.bbox.lower_right.y)
-                        }
-                    })
+                    single_row_bboxs.append(Converter.bbox_to_json(cell.bbox))
                 cell_bboxs.append(single_row_bboxs)
 
-            table_entry["cell_bboxs"] = cell_bboxs
+            table_entry["cell_bboxes"] = cell_bboxs
 
             result.append(table_entry)
 

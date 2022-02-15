@@ -12,6 +12,9 @@ class SplitTableRecognizer:
         for row in table2.rows:
             table1.add_row(row)
 
+        table1.add_page_indices(table2.page_index)
+        table1.add_bboxes(table2.bbox)
+
         return table1
 
     def column_number_diff(self, table1, table2):

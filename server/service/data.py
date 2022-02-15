@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import List
+from cmath import isinf
+from typing import List, Union
 
 import numpy as np
 
@@ -128,11 +129,11 @@ class Table(Component):
         return self._children
 
     @property
-    def bbox(self) -> BBox:
+    def bbox(self) -> Union[BBox, List[BBox]]:
         return self._bbox
 
     @property
-    def page_index(self) -> int:
+    def page_index(self) -> Union[int, List[int]]:
         return self._page_index
 
     @property
@@ -142,6 +143,24 @@ class Table(Component):
     @property
     def is_borderless(self) -> bool:
         return not self._bordered
+
+    def add_page_indices(self, indices: Union[int, List[int]]):
+        if not isinstance(self._page_index, list):
+            self._page_index = [self._page_index]
+        
+        if not isinstance(indices, list):
+            indices = [indices]
+
+        self._page_index.extend(indices)
+
+    def add_bboxes(self, bboxes: Union[BBox, List[BBox]]):
+        if not isinstance(self._bbox, list):
+            self._bbox = [self._bbox]
+        
+        if not isinstance(bboxes, list):
+            bboxes = [bboxes]
+
+        self._bbox.extend(bboxes)
 
 
 # I assume that document has several pages and each of them has the same width and height

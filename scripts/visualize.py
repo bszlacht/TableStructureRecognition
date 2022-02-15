@@ -34,9 +34,14 @@ if __name__ == "__main__":
     if response['tables']:
         pages = data_instance.data
         for table in response['tables']:
-            image = pages[table['page']]
-            image = visualize_bbox(image, table['bbox'], rgb=(255, 0, 0))
-            for cell_bbox in chain(*table['cell_bboxs']):
+            if isinstance(table['page'], list):
+                image = pages[table['page'][0]]
+                image = visualize_bbox(image, table['bbox'][0], rgb=(255, 0, 0))
+            else:
+                image = pages[table['page']]
+                image = visualize_bbox(image, table['bbox'], rgb=(255, 0, 0))
+
+            for cell_bbox in chain(*table['cell_bboxes']):
                 image = visualize_bbox(image, cell_bbox, rgb=(0, 0, 255))
 
             cv2.namedWindow("output", cv2.WINDOW_NORMAL)
