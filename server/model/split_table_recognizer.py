@@ -43,8 +43,8 @@ class SplitTableModel(SplitTableRecognizer):
                 X = self.calculate_x(document, table1, table2)
 
                 if self.predict(X):
-                    document.tables[i + 1] = self.merge(table1, table2)
-                    document.remove_table(i)
+                    document.tables[i] = self.merge(table1, table2)
+                    document.remove_table(j)
 
         return document
 
@@ -58,7 +58,7 @@ class SplitTableModel(SplitTableRecognizer):
         ]]
 
     def predict(self, X: list) -> bool:
-        result = self.model.predict(X)
+        result = self._model.predict(X)
         return result[0]
 
 
@@ -82,8 +82,8 @@ class SplitTableHeuristic(SplitTableRecognizer):
                     continue
 
                 if self.check_merge(table1, table2, document.height):
-                    document.tables[i + 1] = self.merge(table1, table2)
-                    document.remove_table(i)
+                    document.tables[i] = self.merge(table1, table2)
+                    document.remove_table(j)
 
             return document
 
@@ -101,7 +101,7 @@ class SplitTableHeuristic(SplitTableRecognizer):
         if table1_lower_margin > self._margin and table2_upper_margin > self._margin:
             return False
 
-        cells1 = table1.rows[0].cells
+        cells1 = table1.rows[-1].cells
         cells2 = table2.rows[0].cells
 
         for i in range(len(cells1)):
